@@ -1,19 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 namespace WinProcess
 {
     static class WinProcessHelper
     {
 
-        public static void closeAllByName(string processName)
+        public static void CloseAllByName(string processName)
         {
-            Process[] processes;
-            processes = Process.GetProcessesByName(processName);
+            var processes = Process.GetProcessesByName(processName);
             foreach (Process process in processes)
             {
                 process.CloseMainWindow();
@@ -21,10 +15,9 @@ namespace WinProcess
             }
         }
 
-        public static void killAllByName(string processName)
+        public static void KillAllByName(string processName)
         {
-            Process[] processes;
-            processes = Process.GetProcessesByName(processName);
+            var processes = Process.GetProcessesByName(processName);
             foreach (Process process in processes)
             {
                 process.Kill();
@@ -32,17 +25,16 @@ namespace WinProcess
             }
         }
 
-        public static void waitForExit(string processName)
+        public static void WaitForExit(string processName)
         {
-            Process[] processes;
-            processes = Process.GetProcessesByName(processName);
+            var processes = Process.GetProcessesByName(processName);
             foreach (Process process in processes)
             {
                 process.WaitForExit();
             }
         }
 
-        public static int numProcessByName(string processName)
+        public static int NumProcessByName(string processName)
         {
             return Process.GetProcessesByName(processName).Length;
         }

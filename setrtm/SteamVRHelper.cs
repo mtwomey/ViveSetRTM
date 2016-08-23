@@ -12,22 +12,22 @@ namespace SteamVR
     /// </summary>
     static class SteamVRHelper
     {
-        public static string vrmonitorPath = null;
-        public static string vrsettingsPath = null;
+        public static string VrmonitorPath = null;
+        public static string VrsettingsPath = null;
 
         /// <summary>
         /// Sets the render target multiplier in the file
         /// </summary>
         /// <param name="n"></param>
-        public static void setRenderTargetMultiplier(double n)
+        public static void SetRenderTargetMultiplier(double n)
         {
-            JObject config = null;
+            JObject config;
             try
             {
-                config = JsonConvert.DeserializeObject<JObject>(File.ReadAllText(vrsettingsPath));
-            } catch (Exception ex)
+                config = JsonConvert.DeserializeObject<JObject>(File.ReadAllText(VrsettingsPath));
+            } catch (Exception)
             {
-                throw new System.Exception("Could not open file: " + vrsettingsPath);
+                throw new Exception("Could not open file: " + VrsettingsPath);
             }
 
             if ((double)config["steamvr"]["renderTargetMultiplier"] != n)
@@ -35,13 +35,13 @@ namespace SteamVR
                 config["steamvr"]["renderTargetMultiplier"] = n;
                 try
                 {
-                    JsonSave(vrsettingsPath, config, 3);
+                    JsonSave(VrsettingsPath, config, 3);
                     //string configString = JsonConvert.SerializeObject(config, Formatting.Indented);
                     //File.WriteAllText(filename, configString);
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    throw new System.Exception("Could not save vrsettings to: " + vrsettingsPath);
+                    throw new Exception("Could not save vrsettings to: " + VrsettingsPath);
                 }
             }
         }
@@ -50,16 +50,16 @@ namespace SteamVR
         /// Read the render target multiplier from the file and return it
         /// </summary>
         /// <returns></returns>
-        public static double getRenderTargetMultiplier()
+        public static double GetRenderTargetMultiplier()
         {
-            JObject config = null;
+            JObject config;
             try
             {
-                config = JsonConvert.DeserializeObject<JObject>(File.ReadAllText(vrsettingsPath));
+                config = JsonConvert.DeserializeObject<JObject>(File.ReadAllText(VrsettingsPath));
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw new System.Exception("Could not open file: " + vrsettingsPath);
+                throw new Exception("Could not open file: " + VrsettingsPath);
             }
             return (double)config["steamvr"]["renderTargetMultiplier"];
         }
@@ -67,26 +67,26 @@ namespace SteamVR
         /// <summary>
         /// Starts up SteamVR (vrmonitor.exe), which in turn starts several subprocesses
         /// </summary>
-        public static void startSteamVR()
+        public static void StartSteamVr()
         {
             try
             {
-                Process.Start(vrmonitorPath);
-            } catch (Exception ex)
+                Process.Start(VrmonitorPath);
+            } catch (Exception)
             {
-                throw new System.Exception("Could not start SteamVR: " + vrmonitorPath);
+                throw new Exception("Could not start SteamVR: " + VrmonitorPath);
             }
         }
 
         /// <summary>
         /// Kills SteamVR and waits for it's sub-processes to close out as well (they die when vrmonitor dies)
         /// </summary>
-        public static void stopSteamVR()
+        public static void StopSteamVr()
         {
-            WinProcessHelper.killAllByName("vrmonitor");
-            WinProcessHelper.waitForExit("vrserver");
-            WinProcessHelper.waitForExit("vrdashboard.exe");
-            WinProcessHelper.waitForExit("vrcompositor.exe");
+            WinProcessHelper.KillAllByName("vrmonitor");
+            WinProcessHelper.WaitForExit("vrserver");
+            WinProcessHelper.WaitForExit("vrdashboard.exe");
+            WinProcessHelper.WaitForExit("vrcompositor.exe");
         }
 
         /// <summary>
@@ -115,9 +115,9 @@ namespace SteamVR
             }
         }
 
-        public static bool isRunning()
+        public static bool IsRunning()
         {
-            return (WinProcessHelper.numProcessByName("vrmonitor") > 0);
+            return (WinProcessHelper.NumProcessByName("vrmonitor") > 0);
         }
     }
 }

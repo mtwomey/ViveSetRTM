@@ -1,53 +1,61 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SteamVR;
 
 namespace setrtm
 {
     class Program
     {
-        private static string[] commandLineArguments;
-        private static double targetNum = 1.0;
-        private static Dictionary<string, bool> flags = new Dictionary<string, bool>();
+        //private static string[] commandLineArguments;
+        private static double _targetNum = 1.0;
+        private static Dictionary<string, bool> Flags = new Dictionary<string, bool>();
+        private static string SteamDir = "C:\\Program Files (x86)\\Steam\\";
 
-        static void Main(string[] args)
+        static void Main()
         {
-            SteamVRHelper.vrmonitorPath = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\SteamVR\\tools\\bin\\win32\\vrmonitor.exe";
-            SteamVRHelper.vrsettingsPath = "C:\\Program Files (x86)\\Steam\\config\\steamvr.vrsettings";
-            parseCommandLine();
-            if (flags["help"])
+            ParseCommandLine();
+            SteamVRHelper.VrmonitorPath = SteamDir + "steamapps\\common\\SteamVR\\tools\\bin\\win32\\vrmonitor.exe";
+            SteamVRHelper.VrsettingsPath = SteamDir + "config\\steamvr.vrsettings";
+            if (Flags["help"])
             {
-                printHelp();
+                PrintHelp();
                 return;
             }
 
-            if (flags["get"])
+            if (Flags["get"])
             {
-                Console.Write(SteamVRHelper.getRenderTargetMultiplier());
-                return;
+                try
+                {
+                    Console.Write(SteamVRHelper.GetRenderTargetMultiplier());
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    Console.Write("A very bad accident...\n\n");
+                    Console.Write(ex.Message);
+                    return;
+                }
             }
 
-            if (targetNum > 0)
+            if (_targetNum > 0)
             {
                 try
                 {
 
-                    if (flags["nr"])
+                    if (Flags["nr"])
                     {
-                        SteamVRHelper.setRenderTargetMultiplier(targetNum);
+                        SteamVRHelper.SetRenderTargetMultiplier(_targetNum);
                     } else
                     {
-                        if (SteamVRHelper.isRunning())
+                        if (SteamVRHelper.IsRunning())
                         {
-                            SteamVRHelper.stopSteamVR();
-                            SteamVRHelper.setRenderTargetMultiplier(targetNum);
-                            SteamVRHelper.startSteamVR();
+                            SteamVRHelper.StopSteamVr();
+                            SteamVRHelper.SetRenderTargetMultiplier(_targetNum);
+                            SteamVRHelper.StartSteamVr();
                         } else
                         {
-                            SteamVRHelper.setRenderTargetMultiplier(targetNum);
+                            SteamVRHelper.SetRenderTargetMultiplier(_targetNum);
                         }
                     }
                 } catch (Exception ex)
@@ -59,50 +67,59 @@ namespace setrtm
 
         }
 
-        private static void parseCommandLine()
+        private static void ParseCommandLine()
         {
-            commandLineArguments = Environment.GetCommandLineArgs();
-            flags["help"] = false;
-            flags["nr"] = false;
-            flags["get"] = false;
-            foreach(string cla in commandLineArguments)
+            string[] commandLineArguments = Environment.GetCommandLineArgs();
+            Flags["help"] = false;
+            Flags["nr"] = false;
+            Flags["get"] = false;
+            foreach(string cla in commandLineArguments.Select(cla => cla.ToLower()).ToArray())
             {
                 if (cla == "/?")
                 {
-                    flags["help"] = true;
+                    Flags["help"] = true;
                 }
                 if (cla == "/nr")
                 {
-                    flags["nr"] = true;
+                    Flags["nr"] = true;
                 }
                 if (cla == "/get")
                 {
-                    flags["get"] = true;
+                    Flags["get"] = true;
+                }
+                if (cla.StartsWith("/steamdir:"))
+                {
+                    SteamDir = cla.Replace("/steamdir:", "").Replace("\"", "");
+                    if (SteamDir[SteamDir.Length - 1] != '\\')
+                    {
+                        SteamDir += "\\";
+                    }
                 }
             }
             if (commandLineArguments.Length < 2)
             {
-                flags["help"] = true;
+                Flags["help"] = true;
             } else
             {
                 try
                 {
-                    targetNum = Convert.ToDouble(commandLineArguments[1]);
-                } catch (Exception ex)
+                    _targetNum = Convert.ToDouble(commandLineArguments[1]);
+                } catch (Exception)
                 {
-                    targetNum = 0d;
+                    _targetNum = 0d;
                 }
             }
         }
 
-        private static void printHelp()
+        private static void PrintHelp()
         {
             Console.Write("Set the Steam Render Target Multiplier");
             Console.Write("\n\n");
             Console.Write("Usage: setrtm [TARGET NUMBER] [/nr]");
             Console.Write("\n\n");
-            Console.Write("/nr - Do not restart SteamVR, even if it's running.");
-            Console.Write("/get - Just get the current Render Target Multiplier and exit.");
+            Console.Write("/nr - Do not restart SteamVR, even if it's running.\n");
+            Console.Write("/get - Just get the current Render Target Multiplier and exit.\n");
+            Console.Write("/steamdir - Option to set your steam directory. Example: /steamdir:\"D:\\Program Files (x86)\\Steam\\\"\n");
         }
     }
 }
