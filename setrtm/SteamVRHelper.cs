@@ -30,20 +30,18 @@ namespace SteamVR
                 throw new Exception("Could not open file: " + VrsettingsPath);
             }
 
-            if ((double)config["steamvr"]["renderTargetMultiplier"] != n)
+            config["steamvr"]["renderTargetMultiplier"] = n;
+            try
             {
-                config["steamvr"]["renderTargetMultiplier"] = n;
-                try
-                {
-                    JsonSave(VrsettingsPath, config, 3);
-                    //string configString = JsonConvert.SerializeObject(config, Formatting.Indented);
-                    //File.WriteAllText(filename, configString);
-                }
-                catch (Exception)
-                {
-                    throw new Exception("Could not save vrsettings to: " + VrsettingsPath);
-                }
+                JsonSave(VrsettingsPath, config, 3);
+                //string configString = JsonConvert.SerializeObject(config, Formatting.Indented);
+                //File.WriteAllText(filename, configString);
             }
+            catch (Exception)
+            {
+                throw new Exception("Could not save vrsettings to: " + VrsettingsPath);
+            }
+
         }
 
         /// <summary>
